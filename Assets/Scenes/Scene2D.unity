@@ -739,8 +739,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a76354f1d805aa646a01fe60af8ed3df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speed: 0.01
   text: {fileID: 1239819012}
   jarvisList: []
+  linePrefab: {fileID: 324684613760757111, guid: 5af9fa7fc3deb36488f7ff2e0ea2e79b,
+    type: 3}
 --- !u!114 &1239819012
 MonoBehaviour:
   m_ObjectHideFlags: 0
