@@ -31,7 +31,6 @@ public class PlacePoint : MonoBehaviour
             }
             if (Input.GetMouseButton(0))
             {
-                //pointInCreation.transform.position = new Vector3(Input.mousePosition.x/50 -5, Input.mousePosition.y/50 -5, 0);
                 pointInCreation.transform.position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 10));
             }
             if (Input.GetMouseButtonUp(0))

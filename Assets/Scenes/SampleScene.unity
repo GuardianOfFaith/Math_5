@@ -285,8 +285,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27a6e8e7bf4150542bd4ddff5b907309, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speed: 0.01
   text: {fileID: 592201741}
   grahamList: []
+  sortedList: []
+  linePrefab: {fileID: 324684613760757111, guid: 5af9fa7fc3deb36488f7ff2e0ea2e79b,
+    type: 3}
 --- !u!222 &592201743
 CanvasRenderer:
   m_ObjectHideFlags: 0
