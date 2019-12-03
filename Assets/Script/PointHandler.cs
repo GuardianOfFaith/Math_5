@@ -10,7 +10,7 @@ public static class PointHandler
     {
         foreach(GameObject go in pointList)
         {
-            MonoBehaviour.Destroy(go);
+            Object.Destroy(go);
         }
         pointList.Clear();
     }
