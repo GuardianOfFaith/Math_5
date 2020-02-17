@@ -52,12 +52,14 @@ public class AutoRigManager : MonoBehaviour
                     Vector3 spritePos2 = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width - Input.mousePosition.x, Input.mousePosition.y));
                     spritePos2.z += 1;
                     spriteGenoux2.transform.position = spritePos2;
+                    currentSpriteGO.transform.position = spritePos;
                 }
                 else
                 {
                     Vector3 spritePos2 = Camera.main.ScreenToWorldPoint(new Vector2((Screen.width / 2) - (Input.mousePosition.x - (Screen.width / 2)), Input.mousePosition.y));
                     spritePos2.z += 1;
-                    spriteGenoux2.transform.position = spritePos2;
+                    spriteGenoux1.transform.position = spritePos2;
+                    spriteGenoux2.transform.position = spritePos;
                 }
             }
             else if (currentSpriteGO == spriteCoude1)
@@ -67,12 +69,14 @@ public class AutoRigManager : MonoBehaviour
                     Vector3 spritePos2 = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width - Input.mousePosition.x, Input.mousePosition.y));
                     spritePos2.z += 1;
                     spriteCoude2.transform.position = spritePos2;
+                    currentSpriteGO.transform.position = spritePos;
                 }
                 else
                 {
                     Vector3 spritePos2 = Camera.main.ScreenToWorldPoint(new Vector2((Screen.width / 2) - (Input.mousePosition.x - (Screen.width / 2)), Input.mousePosition.y));
                     spritePos2.z += 1;
-                    spriteCoude2.transform.position = spritePos2;
+                    spriteCoude1.transform.position = spritePos2;
+                    spriteCoude2.transform.position = spritePos;
                 }
             }
             else if (currentSpriteGO == spritePoignet1)
@@ -82,19 +86,21 @@ public class AutoRigManager : MonoBehaviour
                     Vector3 spritePos2 = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width - Input.mousePosition.x, Input.mousePosition.y));
                     spritePos2.z += 1;
                     spritePoignet2.transform.position = spritePos2;
+                    currentSpriteGO.transform.position = spritePos;
                 }
                 else
                 {
                     Vector3 spritePos2 = Camera.main.ScreenToWorldPoint(new Vector2((Screen.width / 2) - (Input.mousePosition.x - (Screen.width / 2)), Input.mousePosition.y));
                     spritePos2.z += 1;
-                    spritePoignet2.transform.position = spritePos2;
+                    spritePoignet1.transform.position = spritePos2;
+                    spritePoignet2.transform.position = spritePos;
                 }
             }
             else
             {
                 spritePos.x = 0;
+                currentSpriteGO.transform.position = spritePos;
             }
-            currentSpriteGO.transform.position = spritePos;
 
             if (Input.GetKeyDown(KeyCode.Mouse0))
             {
@@ -109,11 +115,14 @@ public class AutoRigManager : MonoBehaviour
             Vector3[] vertices = mesh.vertices;
             List<int> triangles = new List<int>();
             triangles.AddRange(mesh.triangles);
+            List<Vector2> uvs = new List<Vector2>();
+            uvs.AddRange(mesh.uv);
 
             //////////////////// Head ////////////////////
             Mesh meshHead = new Mesh();
             List<Vector3> verticesHead = new List<Vector3>();
             List<int> trianglesHead = new List<int>();
+            List<Vector2> uvsHead = new List<Vector2>();
 
             float headY = spriteHead.transform.position.y;
             for (int i = 0; i < triangles.Count; i += 3)
@@ -129,6 +138,9 @@ public class AutoRigManager : MonoBehaviour
                     trianglesHead.Add(verticesHead.Count - 3);
                     trianglesHead.Add(verticesHead.Count - 2);
                     trianglesHead.Add(verticesHead.Count - 1);
+                    uvsHead.Add(uvs[triangles[i]]);
+                    uvsHead.Add(uvs[triangles[i+1]]);
+                    uvsHead.Add(uvs[triangles[i+2]]);
 
                     triangles.RemoveRange(i, 3);
                     i -= 3;
@@ -137,43 +149,43 @@ public class AutoRigManager : MonoBehaviour
             meshHead.indexFormat = mesh.indexFormat;
             meshHead.SetVertices(verticesHead);
             meshHead.SetTriangles(trianglesHead, 0);
+            meshHead.SetUVs(0, uvsHead);
             meshHead.RecalculateNormals();
 
             headGO = new GameObject("Head");
             headGO.transform.position = model3D.transform.position;
+            headGO.transform.rotation = model3D.transform.rotation;
             headGO.transform.localScale = model3D.transform.localScale;
             MeshRenderer mr = headGO.AddComponent<MeshRenderer>();
             mr.material = meshRenderer.material;
             MeshFilter mf = headGO.AddComponent<MeshFilter>();
             mf.mesh = meshHead;
 
-            /*mesh = new Mesh();
-            mesh.indexFormat = meshHead.indexFormat;
-            mesh.SetVertices(new List<Vector3>(vertices));
-            mesh.SetTriangles(triangles, 0);
-            mesh.RecalculateNormals();
-            meshFilter.mesh = mesh;*/
-
             ////////////////// Jambes /////////////////////
             Mesh meshCuisseGauche = new Mesh();
             List<Vector3> verticesCuisseGauche = new List<Vector3>();
             List<int> trianglesCuisseGauche = new List<int>();
+            List<Vector2> uvsCuisseGauche = new List<Vector2>();
 
             Mesh meshTibiaGauche = new Mesh();
             List<Vector3> verticesTibiaGauche = new List<Vector3>();
             List<int> trianglesTibiaGauche = new List<int>();
+            List<Vector2> uvsTibiaGauche = new List<Vector2>();
 
             Mesh meshCuisseDroite = new Mesh();
             List<Vector3> verticesCuisseDroite = new List<Vector3>();
             List<int> trianglesCuisseDroite = new List<int>();
+            List<Vector2> uvsCuisseDroite = new List<Vector2>();
 
             Mesh meshTibiaDroite = new Mesh();
             List<Vector3> verticesTibiaDroite = new List<Vector3>();
             List<int> trianglesTibiaDroite = new List<int>();
+            List<Vector2> uvsTibiaDroite = new List<Vector2>();
 
             float jambesY = spriteEntreJambes.transform.position.y;
             float genouxY = spriteGenoux1.transform.position.y;
             float minXShoulder = 0;
+            float minXCoude = spriteCoude1.transform.position.x;
             for (int i = 0; i < triangles.Count; i += 3)
             {
                 Vector3 v1 = model3D.transform.TransformPoint(vertices[triangles[i]]);
@@ -181,9 +193,9 @@ public class AutoRigManager : MonoBehaviour
                 Vector3 v3 = model3D.transform.TransformPoint(vertices[triangles[i + 2]]);
                 if (v1.y < jambesY || v2.y < jambesY || v3.y < jambesY) // si sous Entre Jambes c'est les jambes
                 {
-                    if (v1.x < minXShoulder) minXShoulder = v1.x; // help to find shoulder
-                    if (v2.x < minXShoulder) minXShoulder = v2.x;
-                    if (v3.x < minXShoulder) minXShoulder = v3.x;
+                    if (v1.x < minXShoulder && v1.x > minXCoude) minXShoulder = v1.x; // help to find shoulder
+                    if (v2.x < minXShoulder && v2.x > minXCoude) minXShoulder = v2.x;
+                    if (v3.x < minXShoulder && v3.x > minXCoude) minXShoulder = v3.x;
 
                     if (v1.x < 0)
                     {
@@ -195,6 +207,9 @@ public class AutoRigManager : MonoBehaviour
                             trianglesTibiaDroite.Add(verticesTibiaDroite.Count - 3);
                             trianglesTibiaDroite.Add(verticesTibiaDroite.Count - 2);
                             trianglesTibiaDroite.Add(verticesTibiaDroite.Count - 1);
+                            uvsTibiaDroite.Add(uvs[triangles[i]]);
+                            uvsTibiaDroite.Add(uvs[triangles[i + 1]]);
+                            uvsTibiaDroite.Add(uvs[triangles[i + 2]]);
                         }
                         else
                         {
@@ -204,6 +219,9 @@ public class AutoRigManager : MonoBehaviour
                             trianglesCuisseDroite.Add(verticesCuisseDroite.Count - 3);
                             trianglesCuisseDroite.Add(verticesCuisseDroite.Count - 2);
                             trianglesCuisseDroite.Add(verticesCuisseDroite.Count - 1);
+                            uvsCuisseDroite.Add(uvs[triangles[i]]);
+                            uvsCuisseDroite.Add(uvs[triangles[i + 1]]);
+                            uvsCuisseDroite.Add(uvs[triangles[i + 2]]);
                         }
 
                     }
@@ -218,6 +236,9 @@ public class AutoRigManager : MonoBehaviour
                             trianglesTibiaGauche.Add(verticesTibiaGauche.Count - 3);
                             trianglesTibiaGauche.Add(verticesTibiaGauche.Count - 2);
                             trianglesTibiaGauche.Add(verticesTibiaGauche.Count - 1);
+                            uvsTibiaGauche.Add(uvs[triangles[i]]);
+                            uvsTibiaGauche.Add(uvs[triangles[i + 1]]);
+                            uvsTibiaGauche.Add(uvs[triangles[i + 2]]);
                         }
                         else
                         {
@@ -227,6 +248,9 @@ public class AutoRigManager : MonoBehaviour
                             trianglesCuisseGauche.Add(verticesCuisseGauche.Count - 3);
                             trianglesCuisseGauche.Add(verticesCuisseGauche.Count - 2);
                             trianglesCuisseGauche.Add(verticesCuisseGauche.Count - 1);
+                            uvsCuisseGauche.Add(uvs[triangles[i]]);
+                            uvsCuisseGauche.Add(uvs[triangles[i + 1]]);
+                            uvsCuisseGauche.Add(uvs[triangles[i + 2]]);
                         }
                     }
 
@@ -237,10 +261,12 @@ public class AutoRigManager : MonoBehaviour
             meshCuisseGauche.indexFormat = mesh.indexFormat;
             meshCuisseGauche.SetVertices(verticesCuisseGauche);
             meshCuisseGauche.SetTriangles(trianglesCuisseGauche, 0);
+            meshCuisseGauche.SetUVs(0, uvsCuisseGauche);
             meshCuisseGauche.RecalculateNormals();
 
             cuisseGaucheGO = new GameObject("CuisseGauche");
             cuisseGaucheGO.transform.position = model3D.transform.position;
+            cuisseGaucheGO.transform.rotation = model3D.transform.rotation;
             cuisseGaucheGO.transform.localScale = model3D.transform.localScale;
             /*MeshRenderer*/
             mr = cuisseGaucheGO.AddComponent<MeshRenderer>();
@@ -252,10 +278,12 @@ public class AutoRigManager : MonoBehaviour
             meshTibiaGauche.indexFormat = mesh.indexFormat;
             meshTibiaGauche.SetVertices(verticesTibiaGauche);
             meshTibiaGauche.SetTriangles(trianglesTibiaGauche, 0);
+            meshTibiaGauche.SetUVs(0, uvsTibiaGauche);
             meshTibiaGauche.RecalculateNormals();
 
             tibiaGaucheGO = new GameObject("TibiaGauche");
             tibiaGaucheGO.transform.position = model3D.transform.position;
+            tibiaGaucheGO.transform.rotation = model3D.transform.rotation;
             tibiaGaucheGO.transform.localScale = model3D.transform.localScale;
             /*MeshRenderer*/
             mr = tibiaGaucheGO.AddComponent<MeshRenderer>();
@@ -268,10 +296,12 @@ public class AutoRigManager : MonoBehaviour
             meshCuisseDroite.indexFormat = mesh.indexFormat;
             meshCuisseDroite.SetVertices(verticesCuisseDroite);
             meshCuisseDroite.SetTriangles(trianglesCuisseDroite, 0);
+            meshCuisseDroite.SetUVs(0, uvsCuisseDroite);
             meshCuisseDroite.RecalculateNormals();
 
             cuisseDroiteGO = new GameObject("CuisseDroite");
             cuisseDroiteGO.transform.position = model3D.transform.position;
+            cuisseDroiteGO.transform.rotation = model3D.transform.rotation;
             cuisseDroiteGO.transform.localScale = model3D.transform.localScale;
             /*MeshRenderer*/
             mr = cuisseDroiteGO.AddComponent<MeshRenderer>();
@@ -283,10 +313,12 @@ public class AutoRigManager : MonoBehaviour
             meshTibiaDroite.indexFormat = mesh.indexFormat;
             meshTibiaDroite.SetVertices(verticesTibiaDroite);
             meshTibiaDroite.SetTriangles(trianglesTibiaDroite, 0);
+            meshTibiaDroite.SetUVs(0, uvsTibiaDroite);
             meshTibiaDroite.RecalculateNormals();
 
             tibiaDroiteGO = new GameObject("TibiaDroite");
             tibiaDroiteGO.transform.position = model3D.transform.position;
+            tibiaDroiteGO.transform.rotation = model3D.transform.rotation;
             tibiaDroiteGO.transform.localScale = model3D.transform.localScale;
             /*MeshRenderer*/
             mr = tibiaDroiteGO.AddComponent<MeshRenderer>();
@@ -303,26 +335,32 @@ public class AutoRigManager : MonoBehaviour
             Mesh meshShoulderGauche = new Mesh();
             List<Vector3> verticesShoulderGauche = new List<Vector3>();
             List<int> trianglesShoulderGauche = new List<int>();
+            List<Vector2> uvsShoulderGauche = new List<Vector2>();
 
             Mesh meshAvantBrasGauche = new Mesh();
             List<Vector3> verticesAvantBrasGauche = new List<Vector3>();
             List<int> trianglesAvantBrasGauche = new List<int>();
+            List<Vector2> uvsAvantBrasGauche = new List<Vector2>();
 
             Mesh meshPoignetGauche = new Mesh();
             List<Vector3> verticesPoignetGauche = new List<Vector3>();
             List<int> trianglesPoignetGauche = new List<int>();
+            List<Vector2> uvsPoignetGauche = new List<Vector2>();
 
             Mesh meshShoulderDroite = new Mesh();
             List<Vector3> verticesShoulderDroite = new List<Vector3>();
             List<int> trianglesShoulderDroite = new List<int>();
+            List<Vector2> uvsShoulderDroite = new List<Vector2>();
 
             Mesh meshAvantBrasDroite = new Mesh();
             List<Vector3> verticesAvantBrasDroite = new List<Vector3>();
             List<int> trianglesAvantBrasDroite = new List<int>();
+            List<Vector2> uvsAvantBrasDroite = new List<Vector2>();
 
             Mesh meshPoignetDroite = new Mesh();
             List<Vector3> verticesPoignetDroite = new List<Vector3>();
             List<int> trianglesPoignetDroite = new List<int>();
+            List<Vector2> uvsPoignetDroite = new List<Vector2>();
 
             Vector2 shoulderRPos = Camera.main.WorldToScreenPoint(shoulderGSpriteGO.transform.position);
             shoulderRPos.x = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width - shoulderRPos.x, shoulderRPos.y, 0)).x;
@@ -353,6 +391,9 @@ public class AutoRigManager : MonoBehaviour
                             trianglesPoignetDroite.Add(verticesPoignetDroite.Count - 3);
                             trianglesPoignetDroite.Add(verticesPoignetDroite.Count - 2);
                             trianglesPoignetDroite.Add(verticesPoignetDroite.Count - 1);
+                            uvsPoignetDroite.Add(uvs[triangles[i]]);
+                            uvsPoignetDroite.Add(uvs[triangles[i + 1]]);
+                            uvsPoignetDroite.Add(uvs[triangles[i + 2]]);
                         }
                         else
                         {
@@ -362,6 +403,9 @@ public class AutoRigManager : MonoBehaviour
                             trianglesAvantBrasDroite.Add(verticesAvantBrasDroite.Count - 3);
                             trianglesAvantBrasDroite.Add(verticesAvantBrasDroite.Count - 2);
                             trianglesAvantBrasDroite.Add(verticesAvantBrasDroite.Count - 1);
+                            uvsAvantBrasDroite.Add(uvs[triangles[i]]);
+                            uvsAvantBrasDroite.Add(uvs[triangles[i + 1]]);
+                            uvsAvantBrasDroite.Add(uvs[triangles[i + 2]]);
                         }
                     }
                     else
@@ -372,6 +416,9 @@ public class AutoRigManager : MonoBehaviour
                         trianglesShoulderDroite.Add(verticesShoulderDroite.Count - 3);
                         trianglesShoulderDroite.Add(verticesShoulderDroite.Count - 2);
                         trianglesShoulderDroite.Add(verticesShoulderDroite.Count - 1);
+                        uvsShoulderDroite.Add(uvs[triangles[i]]);
+                        uvsShoulderDroite.Add(uvs[triangles[i + 1]]);
+                        uvsShoulderDroite.Add(uvs[triangles[i + 2]]);
                     }
 
                     triangles.RemoveRange(i, 3);
@@ -389,6 +436,9 @@ public class AutoRigManager : MonoBehaviour
                             trianglesPoignetGauche.Add(verticesPoignetGauche.Count - 3);
                             trianglesPoignetGauche.Add(verticesPoignetGauche.Count - 2);
                             trianglesPoignetGauche.Add(verticesPoignetGauche.Count - 1);
+                            uvsPoignetGauche.Add(uvs[triangles[i]]);
+                            uvsPoignetGauche.Add(uvs[triangles[i + 1]]);
+                            uvsPoignetGauche.Add(uvs[triangles[i + 2]]);
                         }
                         else
                         {
@@ -398,6 +448,9 @@ public class AutoRigManager : MonoBehaviour
                             trianglesAvantBrasGauche.Add(verticesAvantBrasGauche.Count - 3);
                             trianglesAvantBrasGauche.Add(verticesAvantBrasGauche.Count - 2);
                             trianglesAvantBrasGauche.Add(verticesAvantBrasGauche.Count - 1);
+                            uvsAvantBrasGauche.Add(uvs[triangles[i]]);
+                            uvsAvantBrasGauche.Add(uvs[triangles[i + 1]]);
+                            uvsAvantBrasGauche.Add(uvs[triangles[i + 2]]);
                         }
                     }
                     else
@@ -408,6 +461,9 @@ public class AutoRigManager : MonoBehaviour
                         trianglesShoulderGauche.Add(verticesShoulderGauche.Count - 3);
                         trianglesShoulderGauche.Add(verticesShoulderGauche.Count - 2);
                         trianglesShoulderGauche.Add(verticesShoulderGauche.Count - 1);
+                        uvsShoulderGauche.Add(uvs[triangles[i]]);
+                        uvsShoulderGauche.Add(uvs[triangles[i + 1]]);
+                        uvsShoulderGauche.Add(uvs[triangles[i + 2]]);
                     }
 
                     triangles.RemoveRange(i, 3);
@@ -417,10 +473,12 @@ public class AutoRigManager : MonoBehaviour
             meshShoulderGauche.indexFormat = mesh.indexFormat;
             meshShoulderGauche.SetVertices(verticesShoulderGauche);
             meshShoulderGauche.SetTriangles(trianglesShoulderGauche, 0);
+            meshShoulderGauche.SetUVs(0, uvsShoulderGauche);
             meshShoulderGauche.RecalculateNormals();
 
             shoulderGaucheGO = new GameObject("shoulderGauche");
             shoulderGaucheGO.transform.position = model3D.transform.position;
+            shoulderGaucheGO.transform.rotation = model3D.transform.rotation;
             shoulderGaucheGO.transform.localScale = model3D.transform.localScale;
             /*MeshRenderer*/
             mr = shoulderGaucheGO.AddComponent<MeshRenderer>();
@@ -432,10 +490,12 @@ public class AutoRigManager : MonoBehaviour
             meshAvantBrasGauche.indexFormat = mesh.indexFormat;
             meshAvantBrasGauche.SetVertices(verticesAvantBrasGauche);
             meshAvantBrasGauche.SetTriangles(trianglesAvantBrasGauche, 0);
+            meshAvantBrasGauche.SetUVs(0, uvsAvantBrasGauche);
             meshAvantBrasGauche.RecalculateNormals();
 
             avantBrasGaucheGO = new GameObject("AvantBrasGauche");
             avantBrasGaucheGO.transform.position = model3D.transform.position;
+            avantBrasGaucheGO.transform.rotation = model3D.transform.rotation;
             avantBrasGaucheGO.transform.localScale = model3D.transform.localScale;
             /*MeshRenderer*/
             mr = avantBrasGaucheGO.AddComponent<MeshRenderer>();
@@ -447,10 +507,12 @@ public class AutoRigManager : MonoBehaviour
             meshPoignetGauche.indexFormat = mesh.indexFormat;
             meshPoignetGauche.SetVertices(verticesPoignetGauche);
             meshPoignetGauche.SetTriangles(trianglesPoignetGauche, 0);
+            meshPoignetGauche.SetUVs(0, uvsPoignetGauche);
             meshPoignetGauche.RecalculateNormals();
 
             poignetGaucheGO = new GameObject("PoignetGauche");
             poignetGaucheGO.transform.position = model3D.transform.position;
+            poignetGaucheGO.transform.rotation = model3D.transform.rotation;
             poignetGaucheGO.transform.localScale = model3D.transform.localScale;
             /*MeshRenderer*/
             mr = poignetGaucheGO.AddComponent<MeshRenderer>();
@@ -463,10 +525,12 @@ public class AutoRigManager : MonoBehaviour
             meshShoulderDroite.indexFormat = mesh.indexFormat;
             meshShoulderDroite.SetVertices(verticesShoulderDroite);
             meshShoulderDroite.SetTriangles(trianglesShoulderDroite, 0);
+            meshShoulderDroite.SetUVs(0, uvsShoulderDroite);
             meshShoulderDroite.RecalculateNormals();
 
             shoulderDroiteGO = new GameObject("ShoulderDroite");
             shoulderDroiteGO.transform.position = model3D.transform.position;
+            shoulderDroiteGO.transform.rotation = model3D.transform.rotation;
             shoulderDroiteGO.transform.localScale = model3D.transform.localScale;
             /*MeshRenderer*/
             mr = shoulderDroiteGO.AddComponent<MeshRenderer>();
@@ -478,10 +542,12 @@ public class AutoRigManager : MonoBehaviour
             meshAvantBrasDroite.indexFormat = mesh.indexFormat;
             meshAvantBrasDroite.SetVertices(verticesAvantBrasDroite);
             meshAvantBrasDroite.SetTriangles(trianglesAvantBrasDroite, 0);
+            meshAvantBrasDroite.SetUVs(0, uvsAvantBrasDroite);
             meshAvantBrasDroite.RecalculateNormals();
 
             avantBrasDroiteGO = new GameObject("AvantBrasDroite");
             avantBrasDroiteGO.transform.position = model3D.transform.position;
+            avantBrasDroiteGO.transform.rotation = model3D.transform.rotation;
             avantBrasDroiteGO.transform.localScale = model3D.transform.localScale;
             /*MeshRenderer*/
             mr = avantBrasDroiteGO.AddComponent<MeshRenderer>();
@@ -493,10 +559,12 @@ public class AutoRigManager : MonoBehaviour
             meshPoignetDroite.indexFormat = mesh.indexFormat;
             meshPoignetDroite.SetVertices(verticesPoignetDroite);
             meshPoignetDroite.SetTriangles(trianglesPoignetDroite, 0);
+            meshPoignetDroite.SetUVs(0, uvsPoignetDroite);
             meshPoignetDroite.RecalculateNormals();
 
             poignetDroiteGO = new GameObject("PoignetDroite");
             poignetDroiteGO.transform.position = model3D.transform.position;
+            poignetDroiteGO.transform.rotation = model3D.transform.rotation;
             poignetDroiteGO.transform.localScale = model3D.transform.localScale;
             /*MeshRenderer*/
             mr = poignetDroiteGO.AddComponent<MeshRenderer>();
@@ -511,6 +579,7 @@ public class AutoRigManager : MonoBehaviour
             mesh.indexFormat = meshHead.indexFormat;
             mesh.SetVertices(new List<Vector3>(vertices));
             mesh.SetTriangles(triangles, 0);
+            mesh.SetUVs(0, uvs);
             mesh.RecalculateNormals();
             meshFilter.mesh = mesh;
 
@@ -590,5 +659,6 @@ public class AutoRigManager : MonoBehaviour
         Vector3 headPos = GetBarycentreOfGameObject(headGO);
         GameObject go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         go.transform.position = headPos;
+        go.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
     }
 }
