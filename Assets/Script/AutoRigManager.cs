@@ -709,7 +709,10 @@ public class AutoRigManager : MonoBehaviour
 
         Vector3 bodyPos = GetBarycentreOfGameObject(model3D);
         barycentres.Add(GameObject.CreatePrimitive(PrimitiveType.Sphere));
-        barycentres[11].transform.position = new Vector3(0,1.3f,0); //just because the body isn't reset like others part and his y is to small
+        barycentres[11].transform.position = new Vector3(0,1.45f,0); //just because the body isn't reset like others part and his y is to small
+        Vector3 bassinPos = GetBarycentreOfGameObject(model3D);
+        barycentres.Add(GameObject.CreatePrimitive(PrimitiveType.Sphere));
+        barycentres[12].transform.position = new Vector3(0, 0.95f, 0);
 
         foreach (var v in barycentres)
         {
@@ -757,11 +760,62 @@ public class AutoRigManager : MonoBehaviour
     {
         bonesList.Add(GameObject.CreatePrimitive(PrimitiveType.Cylinder));
         bonesList[0].transform.position = Vector3.Lerp(barycentres[0].transform.position, barycentres[11].transform.position, 0.5f);
-        //TODO SET ANGLE AND LENGTH
+        bonesList[0].transform.rotation = Quaternion.FromToRotation(Vector3.up,barycentres[0].transform.position - barycentres[11].transform.position);
+        bonesList[0].transform.localScale = new Vector3(0.1f, 0.5f, 0.1f) * Vector3.Distance(barycentres[0].transform.position, barycentres[11].transform.position);
 
-        //Vector3.Angle(barycentres[0].transform.position, barycentres[11].transform.position);
-        //bonesList[0].transform.eulerAngles = Quaternion.Euler();
-        //new Vector3(barycentres[0].transform.localPosition.x - barycentres[11].transform.localPosition.x, barycentres[0].transform.localPosition.y - barycentres[11].transform.localPosition.y,0);
-        bonesList[0].transform.localScale = new Vector3(0.05f, 0.1f, 0.1f);
+        bonesList.Add(GameObject.CreatePrimitive(PrimitiveType.Cylinder));
+        bonesList[1].transform.position = Vector3.Lerp(barycentres[1].transform.position, barycentres[11].transform.position, 0.5f);
+        bonesList[1].transform.rotation = Quaternion.FromToRotation(Vector3.up, barycentres[1].transform.position - barycentres[11].transform.position);
+        bonesList[1].transform.localScale = new Vector3(0.1f, 0.5f, 0.1f) * Vector3.Distance(barycentres[1].transform.position, barycentres[11].transform.position);
+
+        bonesList.Add(GameObject.CreatePrimitive(PrimitiveType.Cylinder));
+        bonesList[2].transform.position = Vector3.Lerp(barycentres[2].transform.position, barycentres[11].transform.position, 0.5f);
+        bonesList[2].transform.rotation = Quaternion.FromToRotation(Vector3.up, barycentres[2].transform.position - barycentres[11].transform.position);
+        bonesList[2].transform.localScale = new Vector3(0.1f, 0.5f, 0.1f) * Vector3.Distance(barycentres[2].transform.position, barycentres[11].transform.position);
+
+        bonesList.Add(GameObject.CreatePrimitive(PrimitiveType.Cylinder));
+        bonesList[3].transform.position = Vector3.Lerp(barycentres[3].transform.position, barycentres[1].transform.position, 0.5f);
+        bonesList[3].transform.rotation = Quaternion.FromToRotation(Vector3.up, barycentres[3].transform.position - barycentres[1].transform.position);
+        bonesList[3].transform.localScale = new Vector3(0.1f, 0.5f, 0.1f) * Vector3.Distance(barycentres[3].transform.position, barycentres[1].transform.position);
+
+        bonesList.Add(GameObject.CreatePrimitive(PrimitiveType.Cylinder));
+        bonesList[4].transform.position = Vector3.Lerp(barycentres[4].transform.position, barycentres[2].transform.position, 0.5f);
+        bonesList[4].transform.rotation = Quaternion.FromToRotation(Vector3.up, barycentres[4].transform.position - barycentres[2].transform.position);
+        bonesList[4].transform.localScale = new Vector3(0.1f, 0.5f, 0.1f) * Vector3.Distance(barycentres[4].transform.position, barycentres[2].transform.position);
+
+        bonesList.Add(GameObject.CreatePrimitive(PrimitiveType.Cylinder));
+        bonesList[5].transform.position = Vector3.Lerp(barycentres[5].transform.position, barycentres[3].transform.position, 0.5f);
+        bonesList[5].transform.rotation = Quaternion.FromToRotation(Vector3.up, barycentres[5].transform.position - barycentres[3].transform.position);
+        bonesList[5].transform.localScale = new Vector3(0.1f, 0.5f, 0.1f) * Vector3.Distance(barycentres[5].transform.position, barycentres[3].transform.position);
+
+        bonesList.Add(GameObject.CreatePrimitive(PrimitiveType.Cylinder));
+        bonesList[6].transform.position = Vector3.Lerp(barycentres[6].transform.position, barycentres[4].transform.position, 0.5f);
+        bonesList[6].transform.rotation = Quaternion.FromToRotation(Vector3.up, barycentres[6].transform.position - barycentres[4].transform.position);
+        bonesList[6].transform.localScale = new Vector3(0.1f, 0.5f, 0.1f) * Vector3.Distance(barycentres[6].transform.position, barycentres[4].transform.position);
+
+        bonesList.Add(GameObject.CreatePrimitive(PrimitiveType.Cylinder));
+        bonesList[7].transform.position = Vector3.Lerp(barycentres[7].transform.position, barycentres[12].transform.position, 0.5f);
+        bonesList[7].transform.rotation = Quaternion.FromToRotation(Vector3.up, barycentres[7].transform.position - barycentres[12].transform.position);
+        bonesList[7].transform.localScale = new Vector3(0.1f, 0.5f, 0.1f) * Vector3.Distance(barycentres[7].transform.position, barycentres[12].transform.position);
+
+        bonesList.Add(GameObject.CreatePrimitive(PrimitiveType.Cylinder));
+        bonesList[8].transform.position = Vector3.Lerp(barycentres[8].transform.position, barycentres[12].transform.position, 0.5f);
+        bonesList[8].transform.rotation = Quaternion.FromToRotation(Vector3.up, barycentres[8].transform.position - barycentres[12].transform.position);
+        bonesList[8].transform.localScale = new Vector3(0.1f, 0.5f, 0.1f) * Vector3.Distance(barycentres[8].transform.position, barycentres[12].transform.position);
+
+        bonesList.Add(GameObject.CreatePrimitive(PrimitiveType.Cylinder));
+        bonesList[9].transform.position = Vector3.Lerp(barycentres[11].transform.position, barycentres[12].transform.position, 0.5f);
+        bonesList[9].transform.rotation = Quaternion.FromToRotation(Vector3.up, barycentres[11].transform.position - barycentres[12].transform.position);
+        bonesList[9].transform.localScale = new Vector3(0.1f, 0.5f, 0.1f) * Vector3.Distance(barycentres[11].transform.position, barycentres[12].transform.position);
+
+        bonesList.Add(GameObject.CreatePrimitive(PrimitiveType.Cylinder));
+        bonesList[10].transform.position = Vector3.Lerp(barycentres[7].transform.position, barycentres[9].transform.position, 0.5f);
+        bonesList[10].transform.rotation = Quaternion.FromToRotation(Vector3.up, barycentres[7].transform.position - barycentres[9].transform.position);
+        bonesList[10].transform.localScale = new Vector3(0.1f, 0.5f, 0.1f) * Vector3.Distance(barycentres[7].transform.position, barycentres[9].transform.position);
+
+        bonesList.Add(GameObject.CreatePrimitive(PrimitiveType.Cylinder));
+        bonesList[11].transform.position = Vector3.Lerp(barycentres[8].transform.position, barycentres[10].transform.position, 0.5f);
+        bonesList[11].transform.rotation = Quaternion.FromToRotation(Vector3.up, barycentres[8].transform.position - barycentres[10].transform.position);
+        bonesList[11].transform.localScale = new Vector3(0.1f, 0.5f, 0.1f) * Vector3.Distance(barycentres[8].transform.position, barycentres[10].transform.position);
     }
 }
