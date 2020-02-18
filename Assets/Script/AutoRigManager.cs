@@ -30,11 +30,19 @@ public class AutoRigManager : MonoBehaviour
     GameObject avantBrasDroiteGO;
     GameObject poignetDroiteGO;
 
+    List<GameObject> barycentres;
+    float[][] covarianceMatrix;
+
     // Start is called before the first frame update
     void Start()
     {
         meshFilter = model3D.GetComponent<MeshFilter>();
         meshRenderer = model3D.GetComponent<MeshRenderer>();
+
+        barycentres = new List<GameObject>();
+        covarianceMatrix = new float[3][];
+        for (int i = 0; i < 3; i++)
+            covarianceMatrix[i] = new float[3];
     }
 
     // Update is called once per frame
@@ -110,6 +118,8 @@ public class AutoRigManager : MonoBehaviour
 
         if (spriteHead && spriteCoude1 && spriteEntreJambes && spritePoignet1 && spriteGenoux1 && Input.GetKeyDown(KeyCode.D))
         {
+            barycentres.Clear();
+
             //Découpe
             Mesh mesh = meshFilter.mesh;
             Vector3[] vertices = mesh.vertices;
@@ -657,8 +667,86 @@ public class AutoRigManager : MonoBehaviour
     void ShowSkeleton()
     {
         Vector3 headPos = GetBarycentreOfGameObject(headGO);
-        GameObject go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        go.transform.position = headPos;
-        go.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
+        barycentres.Add(GameObject.CreatePrimitive(PrimitiveType.Sphere));
+        barycentres[0].transform.position = headPos;
+
+        Vector3 shoulderGauchePos = GetBarycentreOfGameObject(shoulderGaucheGO);
+        barycentres.Add(GameObject.CreatePrimitive(PrimitiveType.Sphere));
+        barycentres[1].transform.position = shoulderGauchePos;
+        Vector3 shoulderDroitePos = GetBarycentreOfGameObject(shoulderDroiteGO);
+        barycentres.Add(GameObject.CreatePrimitive(PrimitiveType.Sphere));
+        barycentres[2].transform.position = shoulderDroitePos;
+
+        Vector3 avantBrasGauchePos = GetBarycentreOfGameObject(avantBrasGaucheGO);
+        barycentres.Add(GameObject.CreatePrimitive(PrimitiveType.Sphere));
+        barycentres[3].transform.position = avantBrasGauchePos;
+        Vector3 avantBrasDroitePos = GetBarycentreOfGameObject(avantBrasDroiteGO);
+        barycentres.Add(GameObject.CreatePrimitive(PrimitiveType.Sphere));
+        barycentres[4].transform.position = avantBrasDroitePos;
+        
+        Vector3 poignetGauchePos = GetBarycentreOfGameObject(poignetGaucheGO);
+        barycentres.Add(GameObject.CreatePrimitive(PrimitiveType.Sphere));
+        barycentres[5].transform.position = poignetGauchePos;
+        Vector3 poignetDroitePos = GetBarycentreOfGameObject(poignetDroiteGO);
+        barycentres.Add(GameObject.CreatePrimitive(PrimitiveType.Sphere));
+        barycentres[6].transform.position = poignetDroitePos;
+
+        Vector3 cuisseGauchePos = GetBarycentreOfGameObject(cuisseGaucheGO);
+        barycentres.Add(GameObject.CreatePrimitive(PrimitiveType.Sphere));
+        barycentres[7].transform.position = cuisseGauchePos;
+        Vector3 cuisseDroitePos = GetBarycentreOfGameObject(cuisseDroiteGO);
+        barycentres.Add(GameObject.CreatePrimitive(PrimitiveType.Sphere));
+        barycentres[8].transform.position = cuisseDroitePos;
+
+        Vector3 tibiaGauchePos = GetBarycentreOfGameObject(tibiaGaucheGO);
+        barycentres.Add(GameObject.CreatePrimitive(PrimitiveType.Sphere));
+        barycentres[9].transform.position = tibiaGauchePos;
+        Vector3 tibiaDroitePos = GetBarycentreOfGameObject(tibiaDroiteGO);
+        barycentres.Add(GameObject.CreatePrimitive(PrimitiveType.Sphere));
+        barycentres[10].transform.position = tibiaDroitePos;
+
+        Vector3 bodyPos = GetBarycentreOfGameObject(model3D);
+        barycentres.Add(GameObject.CreatePrimitive(PrimitiveType.Sphere));
+        barycentres[11].transform.position = new Vector3(0,1.25f,0); //just because the body isn't reset like others part and his y is to small
+
+        foreach (var v in barycentres)
+        {
+            v.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
+        }
+    }
+
+    float CovarianceCompute(List<float> l1, List<float> l2, List<Vector3> pointList)
+    {
+        float tmp1 = 0, tmp2 = 0, tmp3 = 0;
+        for (int i = 1; i < pointList.Count+1; i++)
+        {
+            tmp1 += l1[i];
+            tmp2 += l2[i];
+            tmp3 += l1[i] * l2[i];
+        }
+        tmp1 /= pointList.Count;
+        tmp2 /= pointList.Count;
+        tmp3 /= pointList.Count;
+        return tmp3 - tmp1 * tmp2;
+    }
+
+    void CovarianceMatrixCompute(List<Vector3> pointsList)
+    {
+        List<float> pX = new List<float>(), pY = new List<float>(), pZ = new List<float>();
+        foreach(Vector3 point in pointsList)
+        {
+            pX.Add(point.x);
+            pY.Add(point.y);
+            pZ.Add(point.z);
+        }
+        covarianceMatrix[0][0] = CovarianceCompute(pX,pX, pointsList);
+        covarianceMatrix[0][1] = CovarianceCompute(pX,pY, pointsList);
+        covarianceMatrix[0][2] = CovarianceCompute(pX,pZ, pointsList);
+        covarianceMatrix[1][0] = CovarianceCompute(pY,pX, pointsList);
+        covarianceMatrix[1][1] = CovarianceCompute(pY,pY, pointsList);
+        covarianceMatrix[1][2] = CovarianceCompute(pY,pZ, pointsList);
+        covarianceMatrix[2][0] = CovarianceCompute(pZ,pX, pointsList);
+        covarianceMatrix[2][1] = CovarianceCompute(pZ,pY, pointsList);
+        covarianceMatrix[2][2] = CovarianceCompute(pZ,pZ, pointsList);
     }
 }
