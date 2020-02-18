@@ -30,7 +30,8 @@ public class AutoRigManager : MonoBehaviour
     GameObject avantBrasDroiteGO;
     GameObject poignetDroiteGO;
 
-    List<GameObject> barycentres;
+    public List<GameObject> barycentres;
+    public List<GameObject> bonesList;
     float[][] covarianceMatrix;
 
     // Start is called before the first frame update
@@ -40,6 +41,7 @@ public class AutoRigManager : MonoBehaviour
         meshRenderer = model3D.GetComponent<MeshRenderer>();
 
         barycentres = new List<GameObject>();
+        bonesList = new List<GameObject>();
         covarianceMatrix = new float[3][];
         for (int i = 0; i < 3; i++)
             covarianceMatrix[i] = new float[3];
@@ -707,12 +709,13 @@ public class AutoRigManager : MonoBehaviour
 
         Vector3 bodyPos = GetBarycentreOfGameObject(model3D);
         barycentres.Add(GameObject.CreatePrimitive(PrimitiveType.Sphere));
-        barycentres[11].transform.position = new Vector3(0,1.25f,0); //just because the body isn't reset like others part and his y is to small
+        barycentres[11].transform.position = new Vector3(0,1.3f,0); //just because the body isn't reset like others part and his y is to small
 
         foreach (var v in barycentres)
         {
             v.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
         }
+        CreateRig();
     }
 
     float CovarianceCompute(List<float> l1, List<float> l2, List<Vector3> pointList)
@@ -748,5 +751,17 @@ public class AutoRigManager : MonoBehaviour
         covarianceMatrix[2][0] = CovarianceCompute(pZ,pX, pointsList);
         covarianceMatrix[2][1] = CovarianceCompute(pZ,pY, pointsList);
         covarianceMatrix[2][2] = CovarianceCompute(pZ,pZ, pointsList);
+    }
+
+    void CreateRig()
+    {
+        bonesList.Add(GameObject.CreatePrimitive(PrimitiveType.Cylinder));
+        bonesList[0].transform.position = Vector3.Lerp(barycentres[0].transform.position, barycentres[11].transform.position, 0.5f);
+        //TODO SET ANGLE AND LENGTH
+
+        //Vector3.Angle(barycentres[0].transform.position, barycentres[11].transform.position);
+        //bonesList[0].transform.eulerAngles = Quaternion.Euler();
+        //new Vector3(barycentres[0].transform.localPosition.x - barycentres[11].transform.localPosition.x, barycentres[0].transform.localPosition.y - barycentres[11].transform.localPosition.y,0);
+        bonesList[0].transform.localScale = new Vector3(0.05f, 0.1f, 0.1f);
     }
 }
